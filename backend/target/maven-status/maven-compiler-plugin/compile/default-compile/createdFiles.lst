@@ -6,6 +6,7 @@ com\expiryeye\controller\ItemController.class
 com\expiryeye\dto\ItemResponse.class
 com\expiryeye\ExpiryEyeApplication.class
 com\expiryeye\dto\ItemRequest.class
+com\expiryeye\service\EmailScheduler.class
 com\expiryeye\controller\ReportController.class
 com\expiryeye\exception\ItemNotFoundException.class
 com\expiryeye\exception\InvalidItemException.class
@@ -14,6 +15,7 @@ com\expiryeye\exception\GlobalExceptionHandler.class
 com\expiryeye\controller\DashboardController.class
 com\expiryeye\dto\DashboardResponse.class
 com\expiryeye\model\ItemCategory.class
+com\expiryeye\service\EmailService.class
 com\expiryeye\config\CorsConfig$1.class
 com\expiryeye\config\CorsConfig.class
 com\expiryeye\model\ExpiryItem.class

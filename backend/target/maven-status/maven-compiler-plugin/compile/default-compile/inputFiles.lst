@@ -11,8 +11,10 @@ E:\Identity 2026\ExpiryEye-MySQL-Fixed\ExpiryEye\backend\src\main\java\com\expir
 E:\Identity 2026\ExpiryEye-MySQL-Fixed\ExpiryEye\backend\src\main\java\com\expiryeye\service\ItemService.java
 E:\Identity 2026\ExpiryEye-MySQL-Fixed\ExpiryEye\backend\src\main\java\com\expiryeye\controller\dto\ItemResponse.java
 E:\Identity 2026\ExpiryEye-MySQL-Fixed\ExpiryEye\backend\src\main\java\com\expiryeye\repository\ItemRepository.java
+E:\Identity 2026\ExpiryEye-MySQL-Fixed\ExpiryEye\backend\src\main\java\com\expiryeye\service\EmailScheduler.java
 E:\Identity 2026\ExpiryEye-MySQL-Fixed\ExpiryEye\backend\src\main\java\com\expiryeye\model\ItemStatus.java
 E:\Identity 2026\ExpiryEye-MySQL-Fixed\ExpiryEye\backend\src\main\java\com\expiryeye\service\ReportService.java
 E:\Identity 2026\ExpiryEye-MySQL-Fixed\ExpiryEye\backend\src\main\java\com\expiryeye\config\CorsConfig.java
+E:\Identity 2026\ExpiryEye-MySQL-Fixed\ExpiryEye\backend\src\main\java\com\expiryeye\service\EmailService.java
 E:\Identity 2026\ExpiryEye-MySQL-Fixed\ExpiryEye\backend\src\main\java\com\expiryeye\controller\ReportController.java
 E:\Identity 2026\ExpiryEye-MySQL-Fixed\ExpiryEye\backend\src\main\java\com\expiryeye\model\ItemCategory.java

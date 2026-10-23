@@ -11,15 +11,20 @@ import org.springframework.core.io.InputStreamResource;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
 import java.io.ByteArrayInputStream;
+//EMAIL ALERTS UPDATION!!
+import com.expiryeye.service.EmailService;
+import org.springframework.web.bind.annotation.RequestParam;
 
 @RestController
 @RequestMapping("/api")
 public class ReportController {
 
     private final ReportService reportService;
+    private final EmailService emailService;
 
-    public ReportController(ReportService reportService) {
+    public ReportController(ReportService reportService, EmailService emailService) {
         this.reportService = reportService;
+        this.emailService = emailService;
     }
 
     @GetMapping("/reports/waste")
@@ -39,5 +44,10 @@ public class ReportController {
                 .headers(headers)
                 .contentType(MediaType.APPLICATION_PDF)
                 .body(new InputStreamResource(bis));
+    }
+@GetMapping("/test-email")
+    public String sendTestEmail(@RequestParam String toEmail) {
+        emailService.sendExpiryAlert(toEmail, "Dolo 650 (Test Medicine)", "2026-11-01", 8);
+        return "Email alert successfully sent to: " + toEmail;
     }
 }
