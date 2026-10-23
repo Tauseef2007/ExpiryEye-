@@ -1,0 +1,117 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ExpiryEye - MySQL Household Safety & Expiry Tracker</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <header class="navbar">
+        <div class="logo">👁️ ExpiryEye</div>
+        <p class="tagline">Never lose money or safety because of a missed expiry.</p>
+    </header>
+
+    <main class="container">
+        <!-- Dashboard Stats -->
+        <section class="dashboard-grid">
+            <div class="card stat-card">
+                <h3>Total Items</h3>
+                <p id="total-items">0</p>
+            </div>
+            <div class="card stat-card warning">
+                <h3>Expiring Soon (7 Days)</h3>
+                <p id="expiring-soon">0</p>
+            </div>
+            <div class="card stat-card danger">
+                <h3>Expired Items</h3>
+                <p id="expired-items">0</p>
+            </div>
+            <div class="card stat-card info">
+                <h3>Value at Risk</h3>
+                <p id="value-at-risk">₹0.00</p>
+            </div>
+        </section>
+
+        <!-- Notification Bar -->
+        <div id="notification" class="notification hidden"></div>
+
+        <!-- Main Layout -->
+        <div class="main-layout">
+            <!-- Add / Edit Item Form -->
+            <section class="card form-container">
+                <h2 id="form-title">Add New Item</h2>
+                <form id="item-form">
+                    <input type="hidden" id="item-id">
+                    <div class="form-group">
+                        <label for="name">Item Name *</label>
+                        <input type="text" id="name" required placeholder="e.g. Paracetamol / Insurance">
+                    </div>
+                    <div class="form-group">
+                        <label for="category">Category *</label>
+                        <select id="category" required>
+                            <option value="MEDICINE">MEDICINE</option>
+                            <option value="GROCERY">GROCERY</option>
+                            <option value="INSURANCE">INSURANCE</option>
+                            <option value="VEHICLE_DOCUMENT">VEHICLE DOCUMENT</option>
+                            <option value="WARRANTY">WARRANTY</option>
+                            <option value="OTHER">OTHER</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label for="expiryDate">Expiry Date *</label>
+                        <input type="date" id="expiryDate" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="reminderDays">Reminder (Days Before Expiry) *</label>
+                        <input type="number" id="reminderDays" value="7" min="0" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="ownerName">Owner / Family Member</label>
+                        <input type="text" id="ownerName" placeholder="e.g. Self, Dad">
+                    </div>
+                    <div class="form-group">
+                        <label for="estimatedValue">Estimated Value (₹)</label>
+                        <input type="number" id="estimatedValue" step="0.01" placeholder="0.00">
+                    </div>
+                    <div class="form-group">
+                        <label for="notes">Notes</label>
+                        <textarea id="notes" placeholder="Optional notes..."></textarea>
+                    </div>
+                    <button type="submit" class="btn btn-primary" id="save-btn">Save Item</button>
+                    <button type="button" class="btn btn-secondary hidden" id="cancel-btn" onclick="resetForm()">Cancel Edit</button>
+                </form>
+            </section>
+
+            <!-- Items View & Controls -->
+            <section class="card list-container">
+                <div class="list-header">
+                    <h2>Tracked Items</h2>
+                    <div class="filters">
+                        <input type="text" id="search-input" placeholder="Search name or notes..." oninput="applyFilters()">
+                        <select id="category-filter" onchange="applyFilters()">
+                            <option value="ALL">All Categories</option>
+                            <option value="MEDICINE">Medicine</option>
+                            <option value="GROCERY">Grocery</option>
+                            <option value="INSURANCE">Insurance</option>
+                            <option value="VEHICLE_DOCUMENT">Vehicle Doc</option>
+                            <option value="WARRANTY">Warranty</option>
+                            <option value="OTHER">Other</option>
+                        </select>
+                        <select id="sort-filter" onchange="applyFilters()">
+                            <option value="NEAREST">Expiry: Nearest First</option>
+                            <option value="FARTHEST">Expiry: Farthest First</option>
+                            <option value="NAME">Name: A to Z</option>
+                        </select>
+                    </div>
+                </div>
+
+                <div id="loading" class="loading-state hidden">Loading items...</div>
+                <div id="items-list" class="items-grid"></div>
+            </section>
+        </div>
+    </main>
+
+    <script src="app.js"></script>
+</body>
+</html>
