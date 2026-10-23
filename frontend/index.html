@@ -87,6 +87,7 @@
             <section class="card list-container">
                 <div class="list-header">
                     <h2>Tracked Items</h2>
+                    <button onclick="downloadPdf()" class="btn btn-primary" style="width: auto; padding: 0.5rem 1rem;">📄 Export PDF</button>
                     <div class="filters">
                         <input type="text" id="search-input" placeholder="Search name or notes..." oninput="applyFilters()">
                         <select id="category-filter" onchange="applyFilters()">

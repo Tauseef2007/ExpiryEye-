@@ -186,3 +186,7 @@ function showLoading(show) {
 function escapeHtml(str) {
     return str.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;");
 }
+// PDF DOWNLOAD FUNCTION
+function downloadPdf(){
+    window.open(`${API_BASE}/reports/pdf`, `_blank`);
+}
