@@ -20,20 +20,31 @@ public class EmailScheduler {
         this.emailService = emailService;
     }
 
-    // Har din subah 9 baje yeh function apne aap chalega
-    @Scheduled(cron = "0 0 9 * * ?")
+    
+    @Scheduled(cron = "0 0 9 * * ?") // Har din subah 9 baje yeh automatic chalega
+    //@Scheduled(cron = "0 * * * * ?") // Har 1 minute mein chalega
     public void checkAndSendExpiryAlerts() {
         List<ExpiryItem> items = itemRepository.findAll();
         LocalDate today = LocalDate.now();
 
         for (ExpiryItem item : items) {
-            if (item.getExpiryDate() != null) {
+            if (item.getExpiryDate() != null && item.getUser() != null && item.getUser().getEmail() != null) {
                 long daysLeft = ChronoUnit.DAYS.between(today, item.getExpiryDate());
+                String recipientEmail = item.getUser().getEmail();
 
-                // Agar item next 7 days ke andar expire ho raha hai
-                if (daysLeft >= 0 && daysLeft <= 7) {
-                    String recipientEmail = "tk2310984@gmail.com"; // Default alert address
-
+                // 1. YAHAN HAI STEP 2: Agar item expire ho chuka hai (Days < 0)
+                if (daysLeft < 0) {
+                    // Yahan hum naya HTML reorder alert bhej rahe hain jisme Item ki ID bhi hai
+                    emailService.sendReorderAlert(
+                        recipientEmail,
+                        item.getName(),
+                        item.getExpiryDate().toString(),
+                        item.getId(),
+                        item.getCategory()
+                    );
+                }
+                // 2. Agar item agle 7 din ke andar expire hone wala hai
+                else if (daysLeft <= 7) {
                     emailService.sendExpiryAlert(
                         recipientEmail,
                         item.getName(),

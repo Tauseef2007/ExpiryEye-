@@ -31,6 +31,7 @@ public class ItemService {
                 request.getExpiryDate(),
                 request.getReminderDays(),
                 request.getOwnerName(),
+                1, // Default quantity for requests that do not provide quantity
                 request.getEstimatedValue(),
                 request.getNotes()
         );

@@ -1,192 +1,348 @@
-const API_BASE = 'http://localhost:8080/api';
+// Base API URL for Backend Spring Boot Server
+const API_BASE_URL = 'http://localhost:8080/api';
+
+// Global state variables
+let currentUser = JSON.parse(localStorage.getItem('expiry_user')) || null;
 let allItems = [];
+let editingItemId = null;
 
+// DOM Loaded Event Listener
 document.addEventListener('DOMContentLoaded', () => {
-    fetchItems();
-    fetchDashboard();
-
-    document.getElementById('item-form').addEventListener('submit', handleFormSubmit);
+    checkAuthState();
+    setupEventListeners();
 });
 
-async function fetchItems() {
-    showLoading(true);
+// Setup all user interaction event listeners
+function setupEventListeners() {
+    // Auth Toggles
+    const showSignup = document.getElementById('show-signup');
+    const showLogin = document.getElementById('show-login');
+    if (showSignup) showSignup.addEventListener('click', toggleAuthMode);
+    if (showLogin) showLogin.addEventListener('click', toggleAuthMode);
+
+    // Forms Submission
+    const loginForm = document.getElementById('login-form');
+    const signupForm = document.getElementById('signup-form');
+    if (loginForm) loginForm.addEventListener('submit', handleLogin);
+    if (signupForm) signupForm.addEventListener('submit', handleSignup);
+
+    // Logout Button
+    const logoutBtn = document.getElementById('logout-btn');
+    if (logoutBtn) logoutBtn.addEventListener('click', handleLogout);
+
+    // Modal Control Buttons
+    const addItemBtn = document.getElementById('add-item-btn');
+    const closeModalBtn = document.getElementById('close-modal');
+    const closeModalX = document.getElementById('close-modal-x');
+    const itemModal = document.getElementById('item-modal');
+    
+    if (addItemBtn) addItemBtn.addEventListener('click', () => itemModal.style.display = 'flex');
+    if (closeModalBtn) closeModalBtn.addEventListener('click', () => itemModal.style.display = 'none');
+    if (closeModalX) closeModalX.addEventListener('click', () => itemModal.style.display = 'none');
+
+    // Add Item Form Submit
+    const addItemForm = document.getElementById('add-item-form');
+    if (addItemForm) addItemForm.addEventListener('submit', handleAddItem);
+
+    // Search, Filter & Sort Event Listeners
+    const searchBar = document.getElementById('search-bar');
+    const filterCategory = document.getElementById('filter-category');
+    const sortBy = document.getElementById('sort-by');
+
+    if (searchBar) searchBar.addEventListener('input', renderItems);
+    if (filterCategory) filterCategory.addEventListener('change', renderItems);
+    if (sortBy) sortBy.addEventListener('change', renderItems);
+}
+
+// Toggle between Login and Signup forms
+function toggleAuthMode(e) {
+    e.preventDefault();
+    const loginForm = document.getElementById('login-form');
+    const signupForm = document.getElementById('signup-form');
+    const subtitle = document.getElementById('auth-subtitle');
+
+    if (loginForm.style.display === 'none') {
+        loginForm.style.display = 'block';
+        signupForm.style.display = 'none';
+        subtitle.textContent = 'Manage your product expiries seamlessly';
+    } else {
+        loginForm.style.display = 'none';
+        signupForm.style.display = 'block';
+        subtitle.textContent = 'Create an account to get started';
+    }
+}
+
+// Check if user is logged in
+function checkAuthState() {
+    const authView = document.getElementById('auth-view');
+    const dashboardView = document.getElementById('dashboard-view');
+    const welcomeMsg = document.getElementById('welcome-msg');
+
+    if (currentUser) {
+        authView.style.display = 'none';
+        dashboardView.style.display = 'block';
+        welcomeMsg.textContent = `Welcome, ${currentUser.name}`;
+        fetchUserItems();
+    } else {
+        authView.style.display = 'flex';
+        dashboardView.style.display = 'none';
+    }
+}
+
+// Handle User Signup
+async function handleSignup(e) {
+    e.preventDefault();
+    const name = document.getElementById('signup-name').value;
+    const email = document.getElementById('signup-email').value;
+    const password = document.getElementById('signup-password').value;
+
     try {
-        const res = await fetch(`${API_BASE}/items`);
-        if (!res.ok) throw new Error('Failed to load items');
-        allItems = await res.json();
-        applyFilters();
+        const response = await fetch(`${API_BASE_URL}/users/signup`, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ name, email, password })
+        });
+
+        if (response.ok) {
+            alert('Signup Successful! Please login.');
+            document.getElementById('signup-form').reset();
+            document.getElementById('show-login').click();
+        } else {
+            const errText = await response.text();
+            alert('Signup failed: ' + errText);
+        }
     } catch (err) {
-        showNotification(err.message, 'error');
-    } finally {
-        showLoading(false);
+        console.error('Error during signup:', err);
+        alert('Server connection error!');
     }
 }
 
-async function fetchDashboard() {
+// Handle User Login
+async function handleLogin(e) {
+    e.preventDefault();
+    const email = document.getElementById('login-email').value;
+    const password = document.getElementById('login-password').value;
+
     try {
-        const res = await fetch(`${API_BASE}/dashboard`);
-        if (!res.ok) return;
-        const data = await res.json();
-        document.getElementById('total-items').innerText = data.totalItems || 0;
-        document.getElementById('expiring-soon').innerText = data.expiringSoonItems || 0;
-        document.getElementById('expired-items').innerText = data.expiredItems || 0;
-        document.getElementById('value-at-risk').innerText = `₹${(data.valueAtRisk || 0).toFixed(2)}`;
+        const response = await fetch(`${API_BASE_URL}/users/login`, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ email, password })
+        });
+
+        if (response.ok) {
+            const user = await response.json();
+            currentUser = user;
+            localStorage.setItem('expiry_user', JSON.stringify(user));
+            checkAuthState();
+        } else {
+            alert('Invalid email or password!');
+        }
     } catch (err) {
-        console.error('Dashboard error:', err);
+        console.error('Error during login:', err);
+        alert('Server connection error!');
     }
 }
 
-function applyFilters() {
-    const search = document.getElementById('search-input').value.toLowerCase();
-    const category = document.getElementById('category-filter').value;
-    const sort = document.getElementById('sort-filter').value;
-
-    let filtered = allItems.filter(item => {
-        const matchSearch = item.name.toLowerCase().includes(search) || 
-                            (item.notes && item.notes.toLowerCase().includes(search));
-        const matchCategory = category === 'ALL' || item.category === category;
-        return matchSearch && matchCategory;
-    });
-
-    if (sort === 'NEAREST') {
-        filtered.sort((a, b) => new Date(a.expiryDate) - new Date(b.expiryDate));
-    } else if (sort === 'FARTHEST') {
-        filtered.sort((a, b) => new Date(b.expiryDate) - new Date(a.expiryDate));
-    } else if (sort === 'NAME') {
-        filtered.sort((a, b) => a.name.localeCompare(b.name));
-    }
-
-    renderItems(filtered);
+// Handle Logout
+function handleLogout() {
+    currentUser = null;
+    localStorage.removeItem('expiry_user');
+    checkAuthState();
 }
 
-function renderItems(items) {
-    const container = document.getElementById('items-list');
-    container.innerHTML = '';
+// Fetch items for logged-in user from Backend
+async function fetchUserItems() {
+    if (!currentUser) return;
 
-    if (items.length === 0) {
-        container.innerHTML = '<p style="color:var(--text-muted); grid-column: 1/-1; text-align:center;">No items found.</p>';
+    try {
+        const response = await fetch(`${API_BASE_URL}/items/user/${currentUser.id}`);
+        if (response.ok) {
+            allItems = await response.json();
+            renderItems();
+        }
+    } catch (err) {
+        console.error('Error fetching items:', err);
+    }
+}
+
+// Quick Date helper in modal
+function setQuickDate(days) {
+    const dateInput = document.getElementById('item-expiry');
+    const targetDate = new Date();
+    targetDate.setDate(targetDate.getDate() + days);
+    dateInput.value = targetDate.toISOString().split('T')[0];
+}
+
+
+async function handleAddItem(e) {
+    e.preventDefault();
+
+    const itemName = document.getElementById('item-name').value.trim();
+
+    if (!itemName) {
+        alert('Please enter an item name.');
         return;
     }
 
-    items.forEach(item => {
-        const card = document.createElement('div');
-        card.className = 'item-card';
-
-        let warningHtml = item.safetyWarning ? `<div class="medicine-warning">⚠️ ${item.safetyWarning}</div>` : '';
-
-        card.innerHTML = `
-            <div>
-                <div style="display:flex; justify-content:space-between; align-items:start; gap:0.5rem;">
-                    <h4 style="margin:0; font-size:1rem; word-break:break-word;">${escapeHtml(item.name)}</h4>
-                    <span class="badge ${item.status}">${item.status.replace('_', ' ')}</span>
-                </div>
-                <p style="font-size:0.8rem; color:var(--text-muted); margin:0.3rem 0;">Category: ${item.category}</p>
-                <p style="font-size:0.85rem; margin:0.3rem 0;">Expiry: <strong>${item.expiryDate}</strong> (${item.daysRemaining} days remaining)</p>
-                ${item.ownerName ? `<p style="font-size:0.8rem; color:var(--text-muted); margin:0.2rem 0;">Owner: ${escapeHtml(item.ownerName)}</p>` : ''}
-                ${item.estimatedValue ? `<p style="font-size:0.8rem; color:var(--teal); margin:0.2rem 0;">Value: ₹${item.estimatedValue.toFixed(2)}</p>` : ''}
-                ${warningHtml}
-            </div>
-            <div style="margin-top:1rem; display:flex; gap:0.5rem;">
-                <button onclick="editItem(${item.id})" class="btn" style="background:#334155; color:white; padding:0.4rem; font-size:0.8rem;">Edit</button>
-                <button onclick="deleteItem(${item.id})" class="btn" style="background:#ef4444; color:white; padding:0.4rem; font-size:0.8rem;">Delete</button>
-            </div>
-        `;
-        container.appendChild(card);
-    });
-}
-
-async function handleFormSubmit(e) {
-    e.preventDefault();
-    const id = document.getElementById('item-id').value;
-    const payload = {
-        name: document.getElementById('name').value,
-        category: document.getElementById('category').value,
-        expiryDate: document.getElementById('expiryDate').value,
-        reminderDays: parseInt(document.getElementById('reminderDays').value),
-        ownerName: document.getElementById('ownerName').value || null,
-        estimatedValue: parseFloat(document.getElementById('estimatedValue').value) || null,
-        notes: document.getElementById('notes').value || null
+    const newItem = {
+        name: itemName,
+        ownerName: currentUser ? currentUser.name : '',
+        category: document.getElementById('item-category').value,
+        expiryDate: document.getElementById('item-expiry').value,
+        quantity: parseInt(document.getElementById('item-quantity').value) || 1,
+        estimatedValue: parseFloat(document.getElementById('item-value').value) || 0,
+        notes: document.getElementById('item-notes').value,
+        user: { id: currentUser ? currentUser.id : 1 }
     };
 
-    const method = id ? 'PUT' : 'POST';
-    const url = id ? `${API_BASE}/items/${id}` : `${API_BASE}/items`;
+    const isEditing = editingItemId !== null;
+    const url = isEditing
+        ? `${API_BASE_URL}/items/${editingItemId}`
+        : `${API_BASE_URL}/items`;
 
     try {
-        const res = await fetch(url, {
-            method: method,
+        const response = await fetch(url, {
+            method: isEditing ? 'PUT' : 'POST',
             headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify(payload)
+            body: JSON.stringify(newItem)
         });
 
-        if (!res.ok) {
-            const errData = await res.json();
-            throw new Error(errData.message || 'Failed to save item');
-        }
+        if (response.ok) {
+            document.getElementById('add-item-form').reset();
+            document.getElementById('item-modal').style.display = 'none';
 
-        showNotification(id ? 'Item updated successfully!' : 'Item added successfully!', 'success');
-        resetForm();
-        fetchItems();
-        fetchDashboard();
+            editingItemId = null;
+
+            fetchUserItems();
+
+            alert(isEditing
+                ? 'Item updated successfully!'
+                : 'Item added successfully!');
+        } else {
+            const errText = await response.text();
+            alert(
+                (isEditing ? 'Failed to update item: ' : 'Failed to add item: ')
+                + errText
+            );
+        }
     } catch (err) {
-        showNotification(err.message, 'error');
+        console.error('Error saving item:', err);
+        alert('Server connection error!');
     }
 }
 
-function editItem(id) {
-    const item = allItems.find(i => i.id === id);
-    if (!item) return;
 
-    document.getElementById('item-id').value = item.id;
-    document.getElementById('name').value = item.name;
-    document.getElementById('category').value = item.category;
-    document.getElementById('expiryDate').value = item.expiryDate;
-    document.getElementById('reminderDays').value = item.reminderDays;
-    document.getElementById('ownerName').value = item.ownerName || '';
-    document.getElementById('estimatedValue').value = item.estimatedValue || '';
-    document.getElementById('notes').value = item.notes || '';
-
-    document.getElementById('form-title').innerText = 'Edit Item';
-    document.getElementById('save-btn').innerText = 'Update Item';
-    document.getElementById('cancel-btn').classList.remove('hidden');
-}
-
+// Delete Item by ID
 async function deleteItem(id) {
     if (!confirm('Are you sure you want to delete this item?')) return;
 
     try {
-        const res = await fetch(`${API_BASE}/items/${id}`, { method: 'DELETE' });
-        if (!res.ok) throw new Error('Failed to delete item');
-        showNotification('Item deleted', 'success');
-        fetchItems();
-        fetchDashboard();
+        const response = await fetch(`${API_BASE_URL}/items/${id}`, {
+            method: 'DELETE'
+        });
+
+        if (response.ok) {
+            fetchUserItems();
+        } else {
+            alert('Failed to delete item.');
+        }
     } catch (err) {
-        showNotification(err.message, 'error');
+        console.error('Error deleting item:', err);
     }
 }
 
-function resetForm() {
-    document.getElementById('item-form').reset();
-    document.getElementById('item-id').value = '';
-    document.getElementById('form-title').innerText = 'Add New Item';
-    document.getElementById('save-btn').innerText = 'Save Item';
-    document.getElementById('cancel-btn').classList.add('hidden');
+
+function editItem(id) {
+    const item = allItems.find(item => String(item.id) === String(id));
+
+    if (!item) {
+        alert('Item not found!');
+        return;
+    }
+    editingItemId = id;
+
+    document.getElementById('item-name').value = item.name || '';
+    document.getElementById('item-category').value = item.category || '';
+    document.getElementById('item-expiry').value = item.expiryDate || '';
+    document.getElementById('item-quantity').value = item.quantity || 1;
+    document.getElementById('item-value').value = item.estimatedValue || 0;
+    document.getElementById('item-notes').value = item.notes || '';
+
+    document.getElementById('item-modal').style.display = 'flex';
 }
 
-function showNotification(msg, type) {
-    const el = document.getElementById('notification');
-    el.innerText = msg;
-    el.className = `notification ${type}`;
-    setTimeout(() => { el.className = 'notification hidden'; }, 4000);
-}
 
-function showLoading(show) {
-    document.getElementById('loading').className = show ? 'loading-state' : 'loading-state hidden';
-}
+// Render Items as Modern Cards with Search, Filter & Sort
+function renderItems() {
+    const gridContainer = document.getElementById('items-grid');
+    const searchQuery = document.getElementById('search-bar').value.toLowerCase();
+    const selectedCategory = document.getElementById('filter-category').value;
+    const sortBy = document.getElementById('sort-by').value;
 
-function escapeHtml(str) {
-    return str.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;");
-}
-// PDF DOWNLOAD FUNCTION
-function downloadPdf(){
-    window.open(`${API_BASE}/reports/pdf`, `_blank`);
+    gridContainer.innerHTML = '';
+
+    // 1. Filter items based on Search query and Category
+    let filtered = allItems.filter(item => {
+        const matchesSearch = item.name.toLowerCase().includes(searchQuery);
+        const matchesCategory = (selectedCategory === 'ALL' || item.category === selectedCategory);
+        return matchesSearch && matchesCategory;
+    });
+
+    // 2. Sort items based on dropdown selection
+    filtered.sort((a, b) => {
+        if (sortBy === 'expiry-asc') {
+            return new Date(a.expiryDate) - new Date(b.expiryDate);
+        } else if (sortBy === 'expiry-desc') {
+            return new Date(b.expiryDate) - new Date(a.expiryDate);
+        } else if (sortBy === 'name-asc') {
+            return a.name.localeCompare(b.name);
+        }
+    });
+
+    // 3. Handle empty state
+    if (filtered.length === 0) {
+        gridContainer.innerHTML = `<p style="grid-column: 1/-1; text-align: center; color: #94a3b8; padding: 40px;">No items found.</p>`;
+        return;
+    }
+
+    // 4. Generate Cards Dynamically
+    const today = new Date().toISOString().split('T')[0];
+
+    filtered.forEach(item => {
+        const isExpired = item.expiryDate < today;
+        const statusClass = isExpired ? 'status-expired' : 'status-active';
+        const statusText = isExpired ? 'EXPIRED' : 'ACTIVE';
+
+        const card = document.createElement('div');
+        card.className = 'item-card';
+        card.innerHTML = `
+            <div>
+                <div class="card-header">
+                    <span class="card-title">${item.name}</span>
+                    <span class="card-category-badge">${item.category.replace(/_/g, ' ')}</span>
+                </div>
+                <div class="card-body">
+                    <p><b>Expiry:</b> ${item.expiryDate}</p>
+                    <p><b>Qty:</b> ${item.quantity || 1}</p>
+                    <p><b>Status:</b> <span class="status-badge ${statusClass}">${statusText}</span></p>
+                    ${item.notes ? `<p style="font-size: 13px; color: #94a3b8; margin-top: 4px;"><i>Notes: ${item.notes}</i></p>` : ''}
+                </div>
+            </div>
+            
+            <div class="card-footer">
+            <span class="card-value">₹${item.estimatedValue || 0}</span>
+            <div class="item-actions">
+            <button class="btn-edit" onclick="editItem(${item.id})">
+            Edit
+            </button>
+            <button class="btn-danger-sm" onclick="deleteItem(${item.id})">
+            Delete
+            </button>
+            </div>
+            </div>
+
+        `;
+        gridContainer.appendChild(card);
+    });
 }

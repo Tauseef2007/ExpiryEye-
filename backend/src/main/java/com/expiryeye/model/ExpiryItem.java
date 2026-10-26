@@ -3,6 +3,9 @@ package com.expiryeye.model;
 import jakarta.persistence.*;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+//LOGIN SIGNUP UPDATION!!
+import jakarta.persistence.ManyToOne;
+import jakarta.persistence.JoinColumn;
 
 @Entity
 @Table(name = "items")
@@ -11,6 +14,11 @@ public class ExpiryItem {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
+
+    //Updation of SIGNUP AND LOGIN FORM!!
+    @ManyToOne
+    @JoinColumn(name = "user_id")
+    private User user;
 
     @Column(nullable = false)
     private String name;
@@ -26,6 +34,9 @@ public class ExpiryItem {
     private Integer reminderDays;
 
     private String ownerName;
+    
+    private Integer quantity; // <--- Yeh quantity field add kar di hai
+
     private Double estimatedValue;
 
     @Column(columnDefinition = "TEXT")
@@ -47,12 +58,13 @@ public class ExpiryItem {
 
     public ExpiryItem() {}
 
-    public ExpiryItem(String name, ItemCategory category, LocalDate expiryDate, Integer reminderDays, String ownerName, Double estimatedValue, String notes) {
+    public ExpiryItem(String name, ItemCategory category, LocalDate expiryDate, Integer reminderDays, String ownerName, Integer quantity, Double estimatedValue, String notes) {
         this.name = name;
         this.category = category;
         this.expiryDate = expiryDate;
         this.reminderDays = reminderDays;
         this.ownerName = ownerName;
+        this.quantity = quantity;
         this.estimatedValue = estimatedValue;
         this.notes = notes;
     }
@@ -75,6 +87,10 @@ public class ExpiryItem {
     public String getOwnerName() { return ownerName; }
     public void setOwnerName(String ownerName) { this.ownerName = ownerName; }
 
+    // --- QUANTITY GETTERS & SETTERS ---
+    public Integer getQuantity() { return quantity; }
+    public void setQuantity(Integer quantity) { this.quantity = quantity; }
+
     public Double getEstimatedValue() { return estimatedValue; }
     public void setEstimatedValue(Double estimatedValue) { this.estimatedValue = estimatedValue; }
 
@@ -83,4 +99,8 @@ public class ExpiryItem {
 
     public LocalDateTime getCreatedAt() { return createdAt; }
     public LocalDateTime getUpdatedAt() { return updatedAt; }
+
+    //UPDATION OF SIGNUP AND LOGIN FORM!!
+    public User getUser() { return user; }
+    public void setUser(User user) { this.user = user; }
 }

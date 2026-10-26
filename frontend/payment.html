@@ -1,0 +1,754 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Pay & Renew | ExpiryEye</title>
+
+    <!-- Razorpay Checkout -->
+    <script src="https://checkout.razorpay.com/v1/checkout.js"></script>
+
+    <style>
+        
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+:root {
+    --primary: #10b981;
+    --primary-dark: #047857;
+    --dark: #10251e;
+    --muted: #718096;
+    --border: #e5eee9;
+    --white: #ffffff;
+}
+
+body {
+    min-height: 100vh;
+    padding: 28px 18px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    overflow-x: hidden;
+    position: relative;
+    isolation: isolate;
+    font-family: "Segoe UI", Arial, sans-serif;
+    color: var(--dark);
+    background:
+        radial-gradient(ellipse at 10% 15%, #bbf7d0 0%, transparent 35%),
+        radial-gradient(ellipse at 90% 85%, #a7f3d0 0%, transparent 35%),
+        linear-gradient(135deg, #f0fdf4, #ecfdf5 45%, #f8fafc);
+}
+
+/* Decorative background lights */
+body::before,
+body::after {
+    content: "";
+    position: fixed;
+    z-index: -1;
+    border-radius: 50%;
+    pointer-events: none;
+    filter: blur(2px);
+    animation: float 8s ease-in-out infinite;
+}
+
+body::before {
+    width: 220px;
+    height: 220px;
+    background: #6ee7b7;
+    opacity: 0.22;
+    top: -75px;
+    left: -70px;
+}
+
+body::after {
+    width: 280px;
+    height: 280px;
+    background: #34d399;
+    opacity: 0.16;
+    bottom: -120px;
+    right: -90px;
+    animation-delay: -4s;
+}
+
+@keyframes float {
+    0%, 100% {
+        transform: translateY(0) rotate(0deg);
+    }
+    50% {
+        transform: translateY(-18px) rotate(8deg);
+    }
+}
+
+/* Main payment card */
+.payment-card {
+    width: 100%;
+    max-width: 490px;
+    padding: 34px;
+    position: relative;
+    overflow: hidden;
+    border: 1px solid rgba(255, 255, 255, 0.9);
+    border-radius: 28px;
+    background: rgba(255, 255, 255, 0.88);
+    box-shadow:
+        0 30px 80px rgba(6, 78, 59, 0.11),
+        0 5px 18px rgba(6, 78, 59, 0.05);
+    backdrop-filter: blur(20px);
+    animation: cardEnter 0.65s ease both;
+}
+
+.payment-card::before {
+    content: "";
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 5px;
+    background: linear-gradient(
+        90deg,
+        #059669,
+        #34d399,
+        #a3e635,
+        #10b981
+    );
+}
+
+@keyframes cardEnter {
+    from {
+        opacity: 0;
+        transform: translateY(22px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+/* Brand */
+.brand {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    margin-bottom: 34px;
+    font-size: 24px;
+    font-weight: 800;
+    letter-spacing: -0.8px;
+    color: #065f46;
+}
+
+.brand-icon {
+    width: 49px;
+    height: 49px;
+    display: grid;
+    place-items: center;
+    border-radius: 16px;
+    font-size: 25px;
+    background: linear-gradient(135deg, #d1fae5, #a7f3d0);
+    box-shadow: 0 5px 15px rgba(16, 185, 129, 0.12);
+}
+
+/* Heading */
+.heading {
+    font-size: clamp(27px, 5vw, 34px);
+    font-weight: 800;
+    letter-spacing: -1.2px;
+    line-height: 1.2;
+    margin-bottom: 11px;
+    color: #10251e;
+}
+
+.subtitle {
+    font-size: 14px;
+    line-height: 1.8;
+    color: #64748b;
+    margin-bottom: 27px;
+}
+
+/* Item details */
+.item-box {
+    position: relative;
+    padding: 23px;
+    border-radius: 20px;
+    border: 1px solid #dcefe5;
+    background:
+        linear-gradient(145deg, #f8fffb, #f0fdf4);
+    margin-bottom: 23px;
+}
+
+.detail {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    gap: 15px;
+    padding: 11px 0;
+    font-size: 14px;
+    line-height: 1.5;
+}
+
+.detail span:first-child {
+    color: #718096;
+    flex-shrink: 0;
+}
+
+.detail strong {
+    color: #1e293b;
+    font-weight: 650;
+    text-align: right;
+    overflow-wrap: anywhere;
+}
+
+/* Amount section */
+.amount {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 12px;
+    margin-top: 12px;
+    padding-top: 20px;
+    border-top: 1px dashed #cbded2;
+}
+
+.amount span {
+    font-size: 14px;
+    font-weight: 650;
+    color: #475569;
+}
+
+.amount strong {
+    color: #047857;
+    font-size: clamp(23px, 5vw, 29px);
+    font-weight: 800;
+    letter-spacing: -0.8px;
+    overflow-wrap: anywhere;
+}
+
+/* Payment button */
+.pay-button {
+    width: 100%;
+    min-height: 56px;
+    padding: 16px 20px;
+    border: none;
+    border-radius: 15px;
+    position: relative;
+    overflow: hidden;
+    color: #ffffff;
+    background: linear-gradient(135deg, #10b981, #047857);
+    box-shadow: 0 9px 22px rgba(5, 150, 105, 0.22);
+    font-size: 16px;
+    font-weight: 750;
+    letter-spacing: 0.2px;
+    cursor: pointer;
+    transition:
+        transform 0.25s ease,
+        box-shadow 0.25s ease,
+        filter 0.25s ease;
+}
+
+.pay-button::before {
+    content: "";
+    position: absolute;
+    top: 0;
+    left: -120%;
+    width: 70%;
+    height: 100%;
+    background: linear-gradient(
+        90deg,
+        transparent,
+        rgba(255, 255, 255, 0.24),
+        transparent
+    );
+    transform: skewX(-20deg);
+    transition: left 0.6s ease;
+}
+
+.pay-button:hover:not(:disabled) {
+    transform: translateY(-3px);
+    box-shadow: 0 14px 28px rgba(5, 150, 105, 0.3);
+    filter: saturate(1.1);
+}
+
+.pay-button:hover:not(:disabled)::before {
+    left: 150%;
+}
+
+.pay-button:active:not(:disabled) {
+    transform: translateY(0) scale(0.99);
+}
+
+.pay-button:disabled {
+    color: #f8fafc;
+    background: #94a3b8;
+    box-shadow: none;
+    cursor: not-allowed;
+}
+
+/* Success / error / info messages */
+.message {
+    display: none;
+    padding: 15px 16px;
+    margin-bottom: 20px;
+    border-radius: 13px;
+    font-size: 13px;
+    line-height: 1.7;
+    overflow-wrap: anywhere;
+    animation: messageEnter 0.25s ease;
+}
+
+.message.error {
+    display: block;
+    color: #991b1b;
+    background: #fef2f2;
+    border: 1px solid #fecaca;
+}
+
+.message.success {
+    display: block;
+    color: #065f46;
+    background: #ecfdf5;
+    border: 1px solid #a7f3d0;
+}
+
+.message.info {
+    display: block;
+    color: #1e40af;
+    background: #eff6ff;
+    border: 1px solid #bfdbfe;
+}
+
+@keyframes messageEnter {
+    from {
+        opacity: 0;
+        transform: translateY(-5px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+/* Security note */
+.security {
+    display: block;
+    text-align: center;
+    color: #7b8a83;
+    font-size: 12px;
+    line-height: 1.9;
+    margin-top: 20px;
+}
+
+/* Back link */
+.back-link {
+    display: block;
+    width: fit-content;
+    margin: 22px auto 0;
+    color: #047857;
+    font-size: 14px;
+    font-weight: 700;
+    text-decoration: none;
+    transition: color 0.2s, transform 0.2s;
+}
+
+.back-link:hover {
+    color: #064e3b;
+    transform: translateX(-3px);
+}
+
+/* Mobile responsive */
+@media (max-width: 520px) {
+    body {
+        padding: 16px 12px;
+    }
+
+    .payment-card {
+        padding: 25px 20px;
+        border-radius: 23px;
+    }
+
+    .brand {
+        margin-bottom: 27px;
+    }
+
+    .item-box {
+        padding: 17px;
+    }
+
+    .detail {
+        font-size: 13px;
+    }
+
+    .pay-button {
+        min-height: 53px;
+    }
+}
+
+/* Accessibility */
+@media (prefers-reduced-motion: reduce) {
+    *,
+    *::before,
+    *::after {
+        animation-duration: 0.01ms !important;
+        animation-iteration-count: 1 !important;
+        transition-duration: 0.01ms !important;
+    }
+}
+
+    </style>
+</head>
+
+<body>
+    <main class="payment-card">
+        <div class="brand">
+            <div class="brand-icon">🛡️</div>
+            <span>ExpiryEye</span>
+        </div>
+
+        <h1 class="heading">Renew Your Item</h1>
+        <p class="subtitle">
+            Review your item details and continue to the secure Razorpay
+            checkout to test your renewal payment.
+        </p>
+
+        <div id="message" class="message" role="status" aria-live="polite"></div>
+
+        <section class="item-box">
+            <div class="detail">
+                <span>Item</span>
+                <strong id="itemName">Loading...</strong>
+            </div>
+
+            <div class="detail">
+                <span>Category</span>
+                <strong id="itemCategory">—</strong>
+            </div>
+
+            <div class="detail">
+                <span>Expiry date</span>
+                <strong id="expiryDate">—</strong>
+            </div>
+
+            <div class="amount">
+                <span>Payment amount</span>
+                <strong id="amount">₹—</strong>
+            </div>
+        </section>
+
+        <button id="payButton" class="pay-button" disabled>
+            Loading item...
+        </button>
+
+        <p class="security">
+            🔒 Payments are handled by Razorpay Checkout.<br>
+            Test Mode only — no real renewal is performed with your provider.
+        </p>
+
+        <a class="back-link" href="index.html">← Back to ExpiryEye</a>
+    </main>
+
+    <script>
+        const API_BASE_URL = "http://localhost:8080/api";
+
+        const params = new URLSearchParams(window.location.search);
+        const itemId = params.get("itemId");
+
+        const payButton = document.getElementById("payButton");
+        const messageBox = document.getElementById("message");
+
+        let currentUser = null;
+        let currentItem = null;
+        let paymentInProgress = false;
+
+        function showMessage(text, type = "error") {
+            messageBox.textContent = text;
+            messageBox.className = "message " + type;
+        }
+
+        function formatDate(dateString) {
+            if (!dateString) return "Not available";
+
+            const date = new Date(dateString + "T00:00:00");
+
+            if (Number.isNaN(date.getTime())) return dateString;
+
+            return date.toLocaleDateString("en-IN", {
+                day: "2-digit",
+                month: "short",
+                year: "numeric"
+            });
+        }
+
+        function formatCategory(category) {
+            const labels = {
+                INSURANCE: "Insurance",
+                WARRANTY: "Warranty",
+                VEHICLE_DOCUMENT: "Vehicle Document",
+                MOBILE_WIFI_RECHARGE: "Mobile / Wi-Fi Recharge"
+            };
+
+            return labels[category] || category || "Unknown";
+        }
+
+        async function readResponse(response) {
+            const text = await response.text();
+            let data = {};
+
+            try {
+                data = text ? JSON.parse(text) : {};
+            } catch {
+                data = { error: text || "Unexpected server response." };
+            }
+
+            if (!response.ok) {
+                throw new Error(
+                    data.error || data.message ||
+                    `Server error (${response.status}).`
+                );
+            }
+
+            return data;
+        }
+
+        async function loadItem() {
+            try {
+                if (!itemId || !/^\d+$/.test(itemId)) {
+                    throw new Error("Item ID is missing or invalid in the page URL.");
+                }
+
+                const savedUser = localStorage.getItem("expiry_user");
+
+                if (!savedUser) {
+                    throw new Error(
+                        "Please log in to ExpiryEye in this browser first, then reopen the renewal link."
+                    );
+                }
+
+                currentUser = JSON.parse(savedUser);
+
+                if (!currentUser || currentUser.id == null) {
+                    throw new Error(
+                        "Your saved login information is invalid. Please log in again."
+                    );
+                }
+
+                const response = await fetch(
+                    `${API_BASE_URL}/items/user/${encodeURIComponent(currentUser.id)}`
+                );
+
+                const items = await readResponse(response);
+
+                currentItem = items.find(
+                    item => String(item.id) === String(itemId)
+                );
+
+                if (!currentItem) {
+                    throw new Error(
+                        "This item was not found in your account."
+                    );
+                }
+
+                document.getElementById("itemName").textContent =
+                    currentItem.name || "Unnamed item";
+
+                document.getElementById("itemCategory").textContent =
+                    formatCategory(currentItem.category);
+
+                document.getElementById("expiryDate").textContent =
+                    formatDate(currentItem.expiryDate);
+
+                const eligibleCategories = [
+                    "INSURANCE",
+                    "WARRANTY",
+                    "VEHICLE_DOCUMENT",
+                    "MOBILE_WIFI_RECHARGE"
+                ];
+
+                if (!eligibleCategories.includes(currentItem.category)) {
+                    throw new Error(
+                        "Online renewal is not available for this item category."
+                    );
+                }
+
+                if (!currentItem.expiryDate ||
+                    currentItem.expiryDate >=
+                    new Date().toISOString().slice(0, 10)) {
+                    throw new Error(
+                        "This item is not expired yet, so renewal payment is unavailable."
+                    );
+                }
+
+                const amount = Number(currentItem.estimatedValue);
+
+                if (!Number.isFinite(amount) || amount <= 0) {
+                    throw new Error(
+                        "This item's payment amount is missing or invalid. Please check its Estimated Value in ExpiryEye."
+                    );
+                }
+
+                document.getElementById("amount").textContent =
+                    amount.toLocaleString("en-IN", {
+                        style: "currency",
+                        currency: "INR"
+                    });
+
+                payButton.textContent = "Pay & Renew";
+                payButton.disabled = false;
+
+            } catch (error) {
+                showMessage(error.message);
+                payButton.textContent = "Unable to Continue";
+                payButton.disabled = true;
+            }
+        }
+
+        async function startPayment() {
+            if (paymentInProgress || !currentUser || !currentItem) return;
+
+            if (typeof Razorpay === "undefined") {
+                showMessage(
+                    "Razorpay Checkout could not load. Check your internet connection and refresh the page."
+                );
+                return;
+            }
+
+            paymentInProgress = true;
+            payButton.disabled = true;
+            payButton.textContent = "Creating secure order...";
+
+            try {
+                const orderResponse = await fetch(
+                    `${API_BASE_URL}/payments/create-order`,
+                    {
+                        method: "POST",
+                        headers: {
+                            "Content-Type": "application/json"
+                        },
+                        body: JSON.stringify({
+                            itemId: Number(currentItem.id),
+                            userId: Number(currentUser.id)
+                        })
+                    }
+                );
+
+                const order = await readResponse(orderResponse);
+
+                if (!order.keyId || !order.orderId ||
+                    !order.amount || !order.currency) {
+                    throw new Error(
+                        "The server did not return complete Razorpay order details."
+                    );
+                }
+
+                const options = {
+                    key: order.keyId,
+                    amount: order.amount,
+                    currency: order.currency,
+                    name: "ExpiryEye",
+                    description: "Renewal: " + (order.itemName || currentItem.name),
+                    order_id: order.orderId,
+
+                    prefill: {
+                        name: currentUser.name || ""
+                    },
+
+                    theme: {
+                        color: "#059669"
+                    },
+
+                    modal: {
+                        ondismiss: function () {
+                            paymentInProgress = false;
+                            payButton.disabled = false;
+                            payButton.textContent = "Pay & Renew";
+                            showMessage(
+                                "Checkout closed. No renewal was confirmed.",
+                                "info"
+                            );
+                        }
+                    },
+
+                    handler: async function (paymentResponse) {
+                        payButton.textContent = "Verifying payment...";
+
+                        try {
+                            const verifyResponse = await fetch(
+                                `${API_BASE_URL}/payments/verify`,
+                                {
+                                    method: "POST",
+                                    headers: {
+                                        "Content-Type": "application/json"
+                                    },
+                                    body: JSON.stringify({
+                                        itemId: Number(currentItem.id),
+                                        userId: Number(currentUser.id),
+                                        razorpay_order_id:
+                                            paymentResponse.razorpay_order_id,
+                                        razorpay_payment_id:
+                                            paymentResponse.razorpay_payment_id,
+                                        razorpay_signature:
+                                            paymentResponse.razorpay_signature
+                                    })
+                                }
+                            );
+
+                            const result = await readResponse(verifyResponse);
+
+                            document.getElementById("expiryDate").textContent =
+                                formatDate(result.newExpiryDate);
+
+                            showMessage(
+                                "Payment signature verified! Your ExpiryEye record has been updated. New expiry date: " +
+                                formatDate(result.newExpiryDate),
+                                "success"
+                            );
+
+                            payButton.textContent = "Renewal Updated";
+                            payButton.disabled = true;
+
+                        } catch (error) {
+                            showMessage(
+                                "Payment was returned by checkout, but verification failed: " +
+                                error.message +
+                                " Do not pay again until you check the payment status."
+                            );
+
+                            payButton.textContent = "Verification Needs Attention";
+                            payButton.disabled = true;
+                        } finally {
+                            paymentInProgress = false;
+                        }
+                    }
+                };
+
+                const checkout = new Razorpay(options);
+
+                checkout.on("payment.failed", function (response) {
+                    paymentInProgress = false;
+                    payButton.disabled = false;
+                    payButton.textContent = "Pay & Renew";
+
+                    const reason =
+                        response.error && response.error.description
+                            ? response.error.description
+                            : "Please try again.";
+
+                    showMessage("Payment failed: " + reason);
+                });
+
+                checkout.open();
+
+            } catch (error) {
+                paymentInProgress = false;
+                payButton.disabled = false;
+                payButton.textContent = "Pay & Renew";
+                showMessage(error.message);
+            }
+        }
+
+        payButton.addEventListener("click", startPayment);
+
+        loadItem();
+    </script>
+</body>
+</html>
