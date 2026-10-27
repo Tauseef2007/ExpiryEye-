@@ -21,8 +21,8 @@ public class EmailScheduler {
     }
 
     
-    @Scheduled(cron = "0 0 9 * * ?") // Har din subah 9 baje yeh automatic chalega
-    //@Scheduled(cron = "0 * * * * ?") // Har 1 minute mein chalega
+    //@Scheduled(cron = "0 0 9 * * ?") // Har din subah 9 baje yeh automatic chalega
+    @Scheduled(cron = "0 * * * * ?") // Har 1 minute mein chalega
     public void checkAndSendExpiryAlerts() {
         List<ExpiryItem> items = itemRepository.findAll();
         LocalDate today = LocalDate.now();
