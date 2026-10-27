@@ -117,9 +117,8 @@ public class ItemController {
         if (optionalItem.isPresent()) {
             ExpiryItem item = optionalItem.get();
             
-            // Expiry date ko 30 din aage badhana
+            // Default expiry extension for Grocery and Medicine.
             item.setExpiryDate(LocalDate.now().plusDays(30));
-            itemRepository.save(item);
             
             // Default text (Grocery aur Medicine ke liye)
             String actionText = "Restocked & Refilled! 🛒";
@@ -148,6 +147,9 @@ public class ItemController {
                 }
             }
             
+            // Persist the final category-specific expiry date.
+            itemRepository.save(item);
+
             String htmlResponse = "<html><body style='text-align:center; font-family:sans-serif; margin-top:50px;'>" +
                     "<h1 style='color:#22c55e;'>" + actionText + "</h1>" +
                     "<p><b>" + item.getName() + "</b> (" + item.getCategory() + ") " + descText + "</p>" +

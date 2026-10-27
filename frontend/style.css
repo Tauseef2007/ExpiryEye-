@@ -425,3 +425,15 @@ body {
     cursor: pointer;
     transition: all 0.25s ease;
 }
+
+
+/* Accessible status messages for async dashboard requests */
+.app-status {
+    min-height: 1.25rem;
+    margin: 0 0 0.75rem;
+    color: var(--text-muted, #94a3b8);
+    font-size: 0.9rem;
+}
+.app-status.is-error {
+    color: #ef4444;
+}

@@ -1,25 +1,26 @@
-E:\Landing Page Stuff\ExpiryEye-build-fixed\ExpiryEye\backend\src\main\java\com\expiryeye\repository\ItemRepository.java
-E:\Landing Page Stuff\ExpiryEye-build-fixed\ExpiryEye\backend\src\main\java\com\expiryeye\config\CorsConfig.java
-E:\Landing Page Stuff\ExpiryEye-build-fixed\ExpiryEye\backend\src\main\java\com\expiryeye\model\ExpiryItem.java
-E:\Landing Page Stuff\ExpiryEye-build-fixed\ExpiryEye\backend\src\main\java\com\expiryeye\service\ExpiryCalculationService.java
-E:\Landing Page Stuff\ExpiryEye-build-fixed\ExpiryEye\backend\src\main\java\com\expiryeye\repository\UserRepository.java
-E:\Landing Page Stuff\ExpiryEye-build-fixed\ExpiryEye\backend\src\main\java\com\expiryeye\service\ReportService.java
-E:\Landing Page Stuff\ExpiryEye-build-fixed\ExpiryEye\backend\src\main\java\com\expiryeye\controller\UserController.java
-E:\Landing Page Stuff\ExpiryEye-build-fixed\ExpiryEye\backend\src\main\java\com\expiryeye\service\ItemService.java
-E:\Landing Page Stuff\ExpiryEye-build-fixed\ExpiryEye\backend\src\main\java\com\expiryeye\controller\dto\DashboardResponse.java
-E:\Landing Page Stuff\ExpiryEye-build-fixed\ExpiryEye\backend\src\main\java\com\expiryeye\controller\dto\ItemRequest.java
-E:\Landing Page Stuff\ExpiryEye-build-fixed\ExpiryEye\backend\src\main\java\com\expiryeye\service\EmailScheduler.java
-E:\Landing Page Stuff\ExpiryEye-build-fixed\ExpiryEye\backend\src\main\java\com\expiryeye\controller\DashboardController.java
-E:\Landing Page Stuff\ExpiryEye-build-fixed\ExpiryEye\backend\src\main\java\com\expiryeye\controller\ItemController.java
-E:\Landing Page Stuff\ExpiryEye-build-fixed\ExpiryEye\backend\src\main\java\com\expiryeye\service\EmailService.java
-E:\Landing Page Stuff\ExpiryEye-build-fixed\ExpiryEye\backend\src\main\java\com\expiryeye\ExpiryEyeApplication.java
-E:\Landing Page Stuff\ExpiryEye-build-fixed\ExpiryEye\backend\src\main\java\com\expiryeye\model\ItemCategory.java
-E:\Landing Page Stuff\ExpiryEye-build-fixed\ExpiryEye\backend\src\main\java\com\expiryeye\service\UserService.java
-E:\Landing Page Stuff\ExpiryEye-build-fixed\ExpiryEye\backend\src\main\java\com\expiryeye\exception\ItemNotFoundException.java
-E:\Landing Page Stuff\ExpiryEye-build-fixed\ExpiryEye\backend\src\main\java\com\expiryeye\controller\dto\ItemResponse.java
-E:\Landing Page Stuff\ExpiryEye-build-fixed\ExpiryEye\backend\src\main\java\com\expiryeye\exception\GlobalExceptionHandler.java
-E:\Landing Page Stuff\ExpiryEye-build-fixed\ExpiryEye\backend\src\main\java\com\expiryeye\model\ItemStatus.java
-E:\Landing Page Stuff\ExpiryEye-build-fixed\ExpiryEye\backend\src\main\java\com\expiryeye\model\User.java
-E:\Landing Page Stuff\ExpiryEye-build-fixed\ExpiryEye\backend\src\main\java\com\expiryeye\controller\PaymentController.java
-E:\Landing Page Stuff\ExpiryEye-build-fixed\ExpiryEye\backend\src\main\java\com\expiryeye\controller\ReportController.java
-E:\Landing Page Stuff\ExpiryEye-build-fixed\ExpiryEye\backend\src\main\java\com\expiryeye\exception\InvalidItemException.java
+C:\Users\TAUSEEF KHAN\Downloads\ExpiryEye-fixed colleg rules upgraded\ExpiryEye\backend\src\main\java\com\expiryeye\controller\DashboardController.java
+C:\Users\TAUSEEF KHAN\Downloads\ExpiryEye-fixed colleg rules upgraded\ExpiryEye\backend\src\main\java\com\expiryeye\controller\UserController.java
+C:\Users\TAUSEEF KHAN\Downloads\ExpiryEye-fixed colleg rules upgraded\ExpiryEye\backend\src\main\java\com\expiryeye\dto\DashboardResponse.java
+C:\Users\TAUSEEF KHAN\Downloads\ExpiryEye-fixed colleg rules upgraded\ExpiryEye\backend\src\main\java\com\expiryeye\service\ItemService.java
+C:\Users\TAUSEEF KHAN\Downloads\ExpiryEye-fixed colleg rules upgraded\ExpiryEye\backend\src\main\java\com\expiryeye\exception\GlobalExceptionHandler.java
+C:\Users\TAUSEEF KHAN\Downloads\ExpiryEye-fixed colleg rules upgraded\ExpiryEye\backend\src\main\java\com\expiryeye\exception\ItemNotFoundException.java
+C:\Users\TAUSEEF KHAN\Downloads\ExpiryEye-fixed colleg rules upgraded\ExpiryEye\backend\src\main\java\com\expiryeye\repository\ItemRepository.java
+C:\Users\TAUSEEF KHAN\Downloads\ExpiryEye-fixed colleg rules upgraded\ExpiryEye\backend\src\main\java\com\expiryeye\dto\ItemResponse.java
+C:\Users\TAUSEEF KHAN\Downloads\ExpiryEye-fixed colleg rules upgraded\ExpiryEye\backend\src\main\java\com\expiryeye\controller\ReportController.java
+C:\Users\TAUSEEF KHAN\Downloads\ExpiryEye-fixed colleg rules upgraded\ExpiryEye\backend\src\main\java\com\expiryeye\exception\InvalidItemException.java
+C:\Users\TAUSEEF KHAN\Downloads\ExpiryEye-fixed colleg rules upgraded\ExpiryEye\backend\src\main\java\com\expiryeye\model\ExpiryItem.java
+C:\Users\TAUSEEF KHAN\Downloads\ExpiryEye-fixed colleg rules upgraded\ExpiryEye\backend\src\main\java\com\expiryeye\controller\ItemController.java
+C:\Users\TAUSEEF KHAN\Downloads\ExpiryEye-fixed colleg rules upgraded\ExpiryEye\backend\src\main\java\com\expiryeye\repository\UserRepository.java
+C:\Users\TAUSEEF KHAN\Downloads\ExpiryEye-fixed colleg rules upgraded\ExpiryEye\backend\src\main\java\com\expiryeye\service\ExpiryCalculationService.java
+C:\Users\TAUSEEF KHAN\Downloads\ExpiryEye-fixed colleg rules upgraded\ExpiryEye\backend\src\main\java\com\expiryeye\service\EmailService.java
+C:\Users\TAUSEEF KHAN\Downloads\ExpiryEye-fixed colleg rules upgraded\ExpiryEye\backend\src\main\java\com\expiryeye\service\ReportService.java
+C:\Users\TAUSEEF KHAN\Downloads\ExpiryEye-fixed colleg rules upgraded\ExpiryEye\backend\src\main\java\com\expiryeye\config\CorsConfig.java
+C:\Users\TAUSEEF KHAN\Downloads\ExpiryEye-fixed colleg rules upgraded\ExpiryEye\backend\src\main\java\com\expiryeye\ExpiryEyeApplication.java
+C:\Users\TAUSEEF KHAN\Downloads\ExpiryEye-fixed colleg rules upgraded\ExpiryEye\backend\src\main\java\com\expiryeye\controller\PaymentController.java
+C:\Users\TAUSEEF KHAN\Downloads\ExpiryEye-fixed colleg rules upgraded\ExpiryEye\backend\src\main\java\com\expiryeye\model\ItemCategory.java
+C:\Users\TAUSEEF KHAN\Downloads\ExpiryEye-fixed colleg rules upgraded\ExpiryEye\backend\src\main\java\com\expiryeye\service\UserService.java
+C:\Users\TAUSEEF KHAN\Downloads\ExpiryEye-fixed colleg rules upgraded\ExpiryEye\backend\src\main\java\com\expiryeye\service\EmailScheduler.java
+C:\Users\TAUSEEF KHAN\Downloads\ExpiryEye-fixed colleg rules upgraded\ExpiryEye\backend\src\main\java\com\expiryeye\model\User.java
+C:\Users\TAUSEEF KHAN\Downloads\ExpiryEye-fixed colleg rules upgraded\ExpiryEye\backend\src\main\java\com\expiryeye\dto\ItemRequest.java
+C:\Users\TAUSEEF KHAN\Downloads\ExpiryEye-fixed colleg rules upgraded\ExpiryEye\backend\src\main\java\com\expiryeye\model\ItemStatus.java
+C:\Users\TAUSEEF KHAN\Downloads\ExpiryEye-fixed colleg rules upgraded\ExpiryEye\backend\src\main\java\com\expiryeye\dto\AuthResponse.java

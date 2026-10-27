@@ -6,6 +6,13 @@ let currentUser = JSON.parse(localStorage.getItem('expiry_user')) || null;
 let allItems = [];
 let editingItemId = null;
 
+function setAppStatus(message, isError = false) {
+    const status = document.getElementById('app-status');
+    if (!status) return;
+    status.textContent = message;
+    status.classList.toggle('is-error', Boolean(isError));
+}
+
 // DOM Loaded Event Listener
 document.addEventListener('DOMContentLoaded', () => {
     checkAuthState();
@@ -155,14 +162,19 @@ function handleLogout() {
 async function fetchUserItems() {
     if (!currentUser) return;
 
+    setAppStatus('Loading your expiry items...');
     try {
         const response = await fetch(`${API_BASE_URL}/items/user/${currentUser.id}`);
-        if (response.ok) {
-            allItems = await response.json();
-            renderItems();
+        if (!response.ok) {
+            setAppStatus('Could not load items. Please try again.', true);
+            return;
         }
+        allItems = await response.json();
+        renderItems();
+        setAppStatus(`Loaded ${allItems.length} item(s).`);
     } catch (err) {
         console.error('Error fetching items:', err);
+        setAppStatus('Unable to connect to the backend. Check that the Java server is running.', true);
     }
 }
 

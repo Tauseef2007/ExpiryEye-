@@ -1,0 +1,16 @@
+# Java / Maven
+backend/target/
+**/target/
+*.class
+
+# Local secrets / environment
+.env
+.env.*
+!.env.example
+application-local.properties
+
+# IDE / OS
+.idea/
+.vscode/
+.DS_Store
+Thumbs.db
